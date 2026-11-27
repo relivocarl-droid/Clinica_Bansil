@@ -1,3 +1,4 @@
+
 @extends('layouts.doctor')
 
 @section('content')
@@ -14,7 +15,7 @@
             </p>
         </div>
 
-        <a href="{{ route('doctor.patients.show', $patient) }}" 
+        <a href="{{ route('doctor.patients.show', $patient) }}"
            class="inline-flex items-center bg-[#CBDCEB]/40 hover:bg-[#CBDCEB]/80 text-[#003366] border border-[#003366]/10 px-5 py-2.5 text-xs font-bold rounded-xl transition-all active:scale-95 shadow-sm self-start sm:self-auto">
             Back to Profile
         </a>
@@ -45,6 +46,7 @@
                     Clinical Diagnosis & Follow-up
                 </h3>
             </div>
+
             <div class="p-6 md:p-8 space-y-4">
                 <div>
                     <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider">
@@ -61,8 +63,8 @@
                     <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider">
                         Next Appointment Date (Optional)
                     </label>
-                    <input type="date" 
-                           name="next_appointment_date" 
+                    <input type="date"
+                           name="next_appointment_date"
                            value="{{ old('next_appointment_date') }}"
                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-[#003366] focus:border-[#0992C2] focus:ring-4 focus:ring-[#0992C2]/15 focus:outline-none transition-all bg-slate-50/30 font-sans">
                 </div>
@@ -78,81 +80,154 @@
             </div>
 
             <div class="p-6 md:p-8 space-y-6">
-                
+
                 <div id="medicine-wrapper" class="space-y-6">
 
                     @php
                         $oldMedicines = old('medicine_id', ['']);
                     @endphp
 
-                        <datalist id="dosage-suggestions">
-                            @foreach(['1 tablet', '2 tablets', '1 capsule', '2 capsules', '5 mL', '10 mL', '1 puff', '2 puffs'] as $dosageSuggestion)
-                                <option value="{{ $dosageSuggestion }}">
-                            @endforeach
-                        </datalist>
-                        <datalist id="frequency-suggestions">
-                            @foreach(['Every 4 hours', 'Every 6 hours', 'Every 8 hours', 'Every 12 hours', 'Once a day', 'Twice a day', 'Three times a day', 'Before meals', 'After meals'] as $frequencySuggestion)
-                                <option value="{{ $frequencySuggestion }}">
-                            @endforeach
-                        </datalist>
-                        <datalist id="duration-suggestions">
-                            @foreach(['3 days', '5 days', '1 week', '2 weeks', '1 month', 'Maintenance'] as $durationSuggestion)
-                                <option value="{{ $durationSuggestion }}">
-                            @endforeach
-                        </datalist>
+                    <datalist id="dosage-suggestions">
+                        @foreach(['1 tablet', '2 tablets', '1 capsule', '2 capsules', '5 mL', '10 mL', '1 puff', '2 puffs'] as $dosageSuggestion)
+                            <option value="{{ $dosageSuggestion }}">
+                        @endforeach
+                    </datalist>
+
+                    <datalist id="frequency-suggestions">
+                        @foreach(['Every 4 hours', 'Every 6 hours', 'Every 8 hours', 'Every 12 hours', 'Once a day', 'Twice a day', 'Three times a day', 'Before meals', 'After meals'] as $frequencySuggestion)
+                            <option value="{{ $frequencySuggestion }}">
+                        @endforeach
+                    </datalist>
+
+                    <datalist id="duration-suggestions">
+                        @foreach(['3 days', '5 days', '1 week', '2 weeks', '1 month', 'Maintenance'] as $durationSuggestion)
+                            <option value="{{ $durationSuggestion }}">
+                        @endforeach
+                    </datalist>
 
                     @foreach($oldMedicines as $index => $oldMed)
+
+                        @php
+                            $selectedMedicine = $medicines->firstWhere('id', $oldMed);
+                            $selectedCategory = strtolower($selectedMedicine->category ?? '');
+                        @endphp
+
                         <div class="medicine-row border border-slate-100 p-5 md:p-6 rounded-xl bg-slate-50/30 relative transition-all duration-200">
-                            
+
                             <div class="flex items-center justify-between border-b border-slate-100/80 pb-4 mb-5">
                                 <span class="row-number text-xs font-black text-[#005596] uppercase tracking-wider bg-[#CBDCEB]/60 px-3 py-1 rounded-lg border border-[#005596]/10">
                                     Medication #{{ $index + 1 }}
                                 </span>
+
                                 <button type="button"
                                         class="remove-btn text-xs font-bold text-slate-400 hover:text-red-500 uppercase tracking-wider transition-colors {{ count($oldMedicines) === 1 ? 'hidden' : '' }}">
                                     Remove Item
                                 </button>
                             </div>
 
+                            <!-- Medicine Category -->
+                            <div class="mb-5">
+                                <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider">
+                                    Medicine Category
+                                </label>
+
+                                <select class="medicine-category w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-[#003366] bg-white focus:border-[#0992C2] focus:ring-4 focus:ring-[#0992C2]/15 focus:outline-none transition-all"
+                                        required>
+
+                                    <option value="">Select Medicine Category...</option>
+
+                                    @foreach($medicines->pluck('category')->filter()->unique()->sort() as $category)
+                                        <option value="{{ strtolower($category) }}"
+                                            {{ $selectedCategory === strtolower($category) ? 'selected' : '' }}>
+                                            {{ $category }}
+                                        </option>
+                                    @endforeach
+
+                                    @if($medicines->contains(fn($medicine) => empty($medicine->category)))
+                                        <option value="other" {{ $selectedCategory === 'other' ? 'selected' : '' }}>
+                                            Other
+                                        </option>
+                                    @endif
+
+                                </select>
+                            </div>
+
                             <!-- Medicine Selection -->
                             <div class="mb-5">
-                                <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider">Medicine Name</label>
-                                <select name="medicine_id[]" class="medicine-select w-full" required>
-                                    <option value="">Search Medicine...</option>
+                                <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider">
+                                    Medicine Name
+                                </label>
+
+                                <select name="medicine_id[]"
+                                        class="medicine-select w-full"
+                                        required
+                                        {{ $selectedMedicine ? '' : 'disabled' }}>
+
+                                    <option value="">Select a category first...</option>
+
                                     @foreach($medicines as $medicine)
-                                        <option value="{{ $medicine->id }}" {{ $oldMed == $medicine->id ? 'selected' : '' }}>
+                                        <option value="{{ $medicine->id }}"
+                                                data-category="{{ strtolower($medicine->category ?? 'other') }}"
+                                                {{ $oldMed == $medicine->id ? 'selected' : '' }}>
                                             {{ $medicine->name }}
                                         </option>
                                     @endforeach
+
                                 </select>
                             </div>
 
                             <!-- Dosage & Instructions Grid -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-sans">
-                                
+
                                 <!-- Dosage -->
                                 <div>
-                                    <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider font-['Karma']">Dosage</label>
-                                    <input type="text" name="dosage[]" list="dosage-suggestions" value="{{ old('dosage.'.$index) }}" placeholder="Enter dosage" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-[#003366] focus:border-[#0992C2] focus:ring-4 focus:ring-[#0992C2]/15 focus:outline-none bg-white transition-all">
+                                    <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider font-['Karma']">
+                                        Dosage
+                                    </label>
+                                    <input type="text"
+                                           name="dosage[]"
+                                           list="dosage-suggestions"
+                                           value="{{ old('dosage.'.$index) }}"
+                                           placeholder="Enter dosage"
+                                           required
+                                           class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-[#003366] focus:border-[#0992C2] focus:ring-4 focus:ring-[#0992C2]/15 focus:outline-none bg-white transition-all">
                                 </div>
 
                                 <!-- Frequency -->
                                 <div>
-                                    <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider font-['Karma']">Frequency</label>
-                                    <input type="text" name="frequency[]" list="frequency-suggestions" value="{{ old('frequency.'.$index) }}" placeholder="Enter frequency" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-[#003366] focus:border-[#0992C2] focus:ring-4 focus:ring-[#0992C2]/15 focus:outline-none bg-white transition-all">
+                                    <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider font-['Karma']">
+                                        Frequency
+                                    </label>
+                                    <input type="text"
+                                           name="frequency[]"
+                                           list="frequency-suggestions"
+                                           value="{{ old('frequency.'.$index) }}"
+                                           placeholder="Enter frequency"
+                                           required
+                                           class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-[#003366] focus:border-[#0992C2] focus:ring-4 focus:ring-[#0992C2]/15 focus:outline-none bg-white transition-all">
                                 </div>
 
                                 <!-- Duration -->
                                 <div>
-                                    <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider font-['Karma']">Duration</label>
-                                    <input type="text" name="duration[]" list="duration-suggestions" value="{{ old('duration.'.$index) }}" placeholder="Enter duration" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-[#003366] focus:border-[#0992C2] focus:ring-4 focus:ring-[#0992C2]/15 focus:outline-none bg-white transition-all">
+                                    <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider font-['Karma']">
+                                        Duration
+                                    </label>
+                                    <input type="text"
+                                           name="duration[]"
+                                           list="duration-suggestions"
+                                           value="{{ old('duration.'.$index) }}"
+                                           placeholder="Enter duration"
+                                           required
+                                           class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-[#003366] focus:border-[#0992C2] focus:ring-4 focus:ring-[#0992C2]/15 focus:outline-none bg-white transition-all">
                                 </div>
 
                                 <!-- Special Instructions -->
                                 <div>
-                                    <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider font-['Karma']">Special Instructions</label>
-                                    <input type="text" 
-                                           name="instructions[]" 
+                                    <label class="block mb-2 text-xs font-bold text-[#7794a3] uppercase tracking-wider font-['Karma']">
+                                        Special Instructions
+                                    </label>
+                                    <input type="text"
+                                           name="instructions[]"
                                            value="{{ old('instructions.'.$index) }}"
                                            placeholder="e.g., Take with a full glass of water"
                                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-[#003366] focus:border-[#0992C2] focus:ring-4 focus:ring-[#0992C2]/15 focus:outline-none bg-white transition-all">
@@ -165,7 +240,8 @@
                 </div>
 
                 <div class="pt-2">
-                    <button type="button" id="add-medicine" 
+                    <button type="button"
+                            id="add-medicine"
                             class="w-full border-2 border-dashed border-[#0992C2]/40 text-[#0992C2] hover:border-[#0992C2] hover:text-[#003366] hover:bg-[#0992C2]/5 font-bold text-xs uppercase tracking-wider py-4 rounded-xl transition-all duration-200">
                         + Add Another Medicine
                     </button>
@@ -174,7 +250,7 @@
             </div>
 
             <div class="px-6 py-5 bg-[#f4f7fc] border-t border-slate-100 flex items-center justify-end">
-                <button type="submit" 
+                <button type="submit"
                         class="bg-[#003366] text-white px-8 py-3 rounded-xl hover:bg-[#0B2D72] transition-all font-bold text-sm shadow-md active:scale-95">
                     Save & Submit Prescription
                 </button>
@@ -199,6 +275,7 @@
         background-color: #ffffff;
         transition: all 0.20s ease-in-out;
     }
+
     .select2-container--default .select2-selection--single .select2-selection__rendered {
         color: #003366;
         font-size: 0.875rem;
@@ -206,11 +283,13 @@
         padding-left: 1rem;
         font-family: sans-serif;
     }
+
     .select2-container--default .select2-selection--single .select2-selection__arrow {
         height: 44px;
         top: 1px;
         right: 10px;
     }
+
     .select2-container--default.select2-container--focus .select2-selection--single {
         border-color: #0992C2;
         box-shadow: 0 0 0 4px rgba(9, 146, 194, 0.15);
@@ -219,68 +298,155 @@
 </style>
 
 <script>
-function initializeSelect2OnElement(element) {
-    $(element).find('.medicine-select').each(function() {
-        if ($(this).hasClass('select2-hidden-accessible')) {
-            $(this).select2('destroy');
+    // All available medicines from the database
+    const allMedicines = @json($medicines->map(function($medicine) {
+        return [
+            'id' => $medicine->id,
+            'name' => $medicine->name,
+            'category' => strtolower($medicine->category ?? 'other')
+        ];
+    })->values());
+
+    // Filter medicines according to the selected category
+    function updateMedicineOptions(row, selectedMedicineId = '') {
+        const categorySelect = row.find('.medicine-category');
+        const medicineSelect = row.find('.medicine-select');
+
+        const selectedCategory = categorySelect.val();
+
+        medicineSelect.empty();
+
+        medicineSelect.append(
+            new Option(
+                selectedCategory ? 'Select Medicine...' : 'Select a category first...',
+                ''
+            )
+        );
+
+        if (!selectedCategory) {
+            medicineSelect.prop('disabled', true);
+            medicineSelect.val('').trigger('change.select2');
+            return;
         }
-        $(this).select2({
-            placeholder: "Search Medicine...",
-            width: '100%',
-            allowClear: true
-        });
-    });
-}
 
-function updateRowNumbers() {
-    $('.medicine-row').each(function(index) {
-        $(this).find('.row-number').text('Medication #' + (index + 1));
-    });
-    
-    // Toggle remove button visibility based on row count
-    if ($('.medicine-row').length === 1) {
-        $('.medicine-row .remove-btn').addClass('hidden');
-    } else {
-        $('.medicine-row .remove-btn').removeClass('hidden');
+        const filteredMedicines = allMedicines.filter(medicine =>
+            medicine.category === selectedCategory
+        );
+
+        filteredMedicines.forEach(medicine => {
+            const option = new Option(
+                medicine.name,
+                medicine.id,
+                false,
+                String(medicine.id) === String(selectedMedicineId)
+            );
+
+            medicineSelect.append(option);
+        });
+
+        medicineSelect.prop('disabled', filteredMedicines.length === 0);
+
+        if (filteredMedicines.length === 0) {
+            medicineSelect.empty().append(
+                new Option('No medicines available in this category', '')
+            );
+        }
+
+        medicineSelect.val(selectedMedicineId || '').trigger('change.select2');
     }
-}
 
-$(document).ready(function () {
-    // Initial load
-    initializeSelect2OnElement('#medicine-wrapper');
+    // Initialize Select2 for medicine dropdowns
+    function initializeSelect2OnElement(element) {
+        $(element).find('.medicine-select').each(function() {
+            if ($(this).hasClass('select2-hidden-accessible')) {
+                $(this).select2('destroy');
+            }
 
-    $('#add-medicine').click(function () {
-        let firstRow = $('.medicine-row:first');
-        
-        // Safely destroy Select2 on cloned element before cloning to prevent duplicate IDs
-        firstRow.find('.medicine-select').select2('destroy');
-        
-        let newRow = firstRow.clone(true);
+            $(this).select2({
+                placeholder: "Select a medicine...",
+                width: '100%',
+                allowClear: true
+            });
+        });
+    }
 
-        // Re-initialize original Select2
-        firstRow.find('.medicine-select').select2({
-            placeholder: "Search Medicine...",
-            width: '100%',
-            allowClear: true
+    // Update medication row numbers
+    function updateRowNumbers() {
+        $('.medicine-row').each(function(index) {
+            $(this).find('.row-number').text('Medication #' + (index + 1));
         });
 
-        // Clean values in cloned row
-        newRow.find('input').val('');
-        newRow.find('select').val('');
+        if ($('.medicine-row').length === 1) {
+            $('.medicine-row .remove-btn').addClass('hidden');
+        } else {
+            $('.medicine-row .remove-btn').removeClass('hidden');
+        }
+    }
 
-        // Append and re-initialize Select2 on new row
-        $('#medicine-wrapper').append(newRow);
-        initializeSelect2OnElement(newRow);
-        
+    $(document).ready(function () {
+
+        // Initialize category filtering for every existing row
+        $('.medicine-row').each(function() {
+            const row = $(this);
+
+            const selectedMedicineId = row.find('.medicine-select').val();
+
+            updateMedicineOptions(row, selectedMedicineId || '');
+
+            initializeSelect2OnElement(row);
+        });
+
+        // When category changes, update its medicine dropdown
+        $(document).on('change', '.medicine-category', function() {
+            const row = $(this).closest('.medicine-row');
+
+            updateMedicineOptions(row);
+        });
+
+        // Add another medication row
+        $('#add-medicine').click(function () {
+            let firstRow = $('.medicine-row:first');
+
+            // Destroy Select2 before cloning
+            firstRow.find('.medicine-select').select2('destroy');
+
+            let newRow = firstRow.clone(false);
+
+            // Reinitialize Select2 on original row
+            initializeSelect2OnElement(firstRow);
+
+            // Clear cloned input values
+            newRow.find('input').val('');
+
+            // Reset category and medicine dropdowns
+            newRow.find('.medicine-category').val('');
+
+            newRow.find('.medicine-select').empty();
+
+            newRow.find('.medicine-select').append(
+                new Option('Select a category first...', '')
+            );
+
+            newRow.find('.medicine-select').prop('disabled', true);
+
+            // Append new row
+            $('#medicine-wrapper').append(newRow);
+
+            // Initialize Select2 on new row
+            initializeSelect2OnElement(newRow);
+
+            updateRowNumbers();
+        });
+
+        // Remove medication row
+        $(document).on('click', '.remove-btn', function () {
+            if ($('.medicine-row').length > 1) {
+                $(this).closest('.medicine-row').remove();
+                updateRowNumbers();
+            }
+        });
+
         updateRowNumbers();
     });
-
-    $(document).on('click', '.remove-btn', function () {
-        if ($('.medicine-row').length > 1) {
-            $(this).closest('.medicine-row').remove();
-            updateRowNumbers();
-        }
-    });
-});
 </script>
 @endsection

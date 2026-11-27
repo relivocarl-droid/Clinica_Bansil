@@ -16,12 +16,16 @@
         
         <!-- Progress Badge -->
         <div class="flex items-center gap-2.5 bg-[#f4f7fc] border border-[#CBDCEB]/60 px-4 py-2 rounded-xl self-start sm:self-center shadow-xs">
-            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-[#003366] text-white text-[10px] font-bold shadow-xs">1</span>
-            <span class="text-xs font-bold text-[#003366] uppercase tracking-wider">Patient Select</span>
-            <span class="text-[#7794a3] text-xs font-bold px-1">&rarr;</span>
-            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-[#CBDCEB] text-[#003366] text-[10px] font-bold">2</span>
-            <span class="text-xs font-bold text-[#7794a3] uppercase tracking-wider">Medications</span>
-        </div>
+    <span class="flex w-5 h-5 min-w-5 min-h-5 items-center justify-center rounded-full bg-[#003366] text-white text-[10px] font-bold leading-none shadow-xs">1</span>
+
+    <span class="text-xs font-bold text-[#003366] uppercase tracking-wider">Patient Select</span>
+
+    <span class="text-[#7794a3] text-xs font-bold px-1">&rarr;</span>
+
+    <span class="flex w-5 h-5 min-w-5 min-h-5 items-center justify-center rounded-full bg-[#CBDCEB] text-[#003366] text-[10px] font-bold leading-none">2</span>
+
+    <span class="text-xs font-bold text-[#7794a3] uppercase tracking-wider">Medications</span>
+</div>
     </div>
 
     <!-- Main Search and Directory Container -->
@@ -50,20 +54,20 @@
 
                     <!-- Action Buttons -->
                     <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto font-['Karma']">
-                        <button type="submit"
-                                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs font-bold text-white uppercase tracking-wider bg-[#003366] hover:bg-[#0B2D72] active:scale-[0.98] rounded-xl shadow-xs focus:outline-none focus:ring-4 focus:ring-[#003366]/20 transition-all duration-200 cursor-pointer">
-                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                            <span>Search</span>
-                        </button>
+    <button type="submit"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs font-bold text-white uppercase tracking-wider bg-[#003366] hover:bg-[#0B2D72] active:scale-[0.98] rounded-xl shadow-xs focus:outline-none focus:ring-4 focus:ring-[#003366]/20 transition-all duration-200 cursor-pointer">
+        <i class="fa-solid fa-magnifying-glass text-xs leading-none"></i>
+        <span class="text-xs leading-none relative top-[2px]">Search</span>
+    </button>
 
-                        @if(request('search'))
-                            <a href="{{ route('doctor.prescriptions.create') }}"
-                               class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 text-xs font-bold text-[#003366] uppercase tracking-wider bg-[#CBDCEB]/40 hover:bg-[#CBDCEB]/80 active:scale-[0.98] rounded-xl border border-[#003366]/10 transition-all duration-200 cursor-pointer">
-                                <i class="fa-solid fa-xmark text-sm"></i>
-                                <span>Clear</span>
-                            </a>
-                        @endif
-                    </div>
+    @if(request('search'))
+        <a href="{{ route('doctor.prescriptions.create') }}"
+           class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 text-xs font-bold text-[#003366] uppercase tracking-wider bg-[#CBDCEB]/40 hover:bg-[#CBDCEB]/80 active:scale-[0.98] rounded-xl border border-[#003366]/10 transition-all duration-200 cursor-pointer">
+            <i class="fa-solid fa-xmark text-xs leading-none"></i>
+            <span class="text-xs leading-none relative top-[2px]">Clear</span>
+        </a>
+    @endif
+</div>
                 </div>
             </form>
         </div>
@@ -76,9 +80,10 @@
                     <i class="fa-solid fa-address-book text-[#7794a3] text-sm"></i>
                     <span>Patient Records Directory</span>
                 </h3>
-                <span class="bg-[#CBDCEB]/50 text-[#003366] text-[10px] font-bold px-3 py-1 rounded-lg tracking-wider uppercase border border-[#003366]/10">
-                    Matches: {{ method_exists($patients, 'total') ? $patients->total() : $patients->count() }}
-                </span>
+               <span style="position: relative; top: 2px;"
+      class="inline-flex items-center justify-center bg-[#CBDCEB]/50 text-[#003366] text-[10px] font-bold px-3 py-1 rounded-lg tracking-wider uppercase border border-[#003366]/10 leading-none">
+    Matches: {{ method_exists($patients, 'total') ? $patients->total() : $patients->count() }}
+</span>
             </div>
 
             <div class="space-y-3">
@@ -95,17 +100,18 @@
                                 <p class="font-bold text-[#003366] text-base group-hover:text-[#0992C2] transition-colors truncate">
                                     {{ $patient->first_name }} {{ $patient->last_name }}
                                 </p>
-                                <p class="text-xs text-[#7794a3] font-semibold mt-0.5 uppercase tracking-wider flex items-center gap-1.5">
-                                    <span>Patient ID:</span> 
-                                    <span class="text-[#003366] font-mono font-bold">#{{ $patient->id }}</span>
-                                </p>
+                                <p class="text-xs text-[#7794a3] font-semibold mt-0.5 uppercase tracking-wider inline-flex items-center gap-1.5 leading-none">
+    <span>Patient ID:</span>
+    <span style="position: relative; top: -2px;"
+          class="text-[#003366] font-mono font-bold leading-none">#{{ $patient->id }}</span>
+</p>
                             </div>
                         </div>
 
                         <!-- Action Button -->
                         <a href="{{ route('doctor.prescriptions.create.patient', $patient->id) }}"
                            class="w-full sm:w-auto shrink-0 text-center bg-white group-hover:bg-[#003366] text-[#003366] group-hover:text-white px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl border border-slate-200 group-hover:border-[#003366] transition-all duration-200 flex items-center justify-center gap-2 shadow-xs active:scale-95">
-                            <span>Select Patient</span>
+                            <span class="relative top-[2px] text-xs leading-none">Select Patient</span>
                             <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                             </svg>

@@ -15,12 +15,7 @@
             </p>
         </div>
 
-        {{-- Updated Primary "Add Patient" Button --}}
-        <a href="{{ route('doctor.patients.create') }}"
-           class="inline-flex items-center gap-2 bg-[#1F6F8B] hover:bg-[#165267] active:bg-[#113f50] text-white px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all active:scale-95 shadow-xs self-start sm:self-auto font-['Karma']">
-            <i class="fa-solid fa-user-plus text-xs"></i>
-            Add Patient
-        </a>
+        
     </div>
 
     {{-- Main Container Card --}}
@@ -46,21 +41,20 @@
                     </div>
 
                     <div class="flex gap-2 font-['Karma']">
-                        {{-- Updated Search Button --}}
-                        <button type="submit"
-                                class="bg-[#1F6F8B] hover:bg-[#165267] active:bg-[#113f50] text-white px-6 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all active:scale-95 shadow-xs flex items-center gap-2 justify-center w-full sm:w-auto">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            Search
-                        </button>
+    <button type="submit"
+            class="bg-[#1F6F8B] hover:bg-[#165267] active:bg-[#113f50] text-white px-6 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all active:scale-95 shadow-xs flex items-center gap-2 justify-center w-full sm:w-auto">
+        <i class="fa-solid fa-magnifying-glass text-xs leading-none"></i>
+        <span style="position: relative; top: 1px;" class="text-xs leading-none">Search</span>
+    </button>
 
-                        @if(request('search'))
-                            <a href="{{ route('doctor.patients.index') }}"
-                               class="bg-[#CBDCEB]/40 hover:bg-[#1F6F8B] text-[#003366] hover:text-white px-5 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all active:scale-95 flex items-center gap-2 justify-center border border-[#003366]/10 hover:border-transparent">
-                                <i class="fa-solid fa-xmark text-sm"></i>
-                                Clear
-                            </a>
-                        @endif
-                    </div>
+    @if(request('search'))
+        <a href="{{ route('doctor.patients.index') }}"
+           class="bg-[#CBDCEB]/40 hover:bg-[#1F6F8B] text-[#003366] hover:text-white px-5 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all active:scale-95 flex items-center gap-2 justify-center border border-[#003366]/10 hover:border-transparent">
+            <i class="fa-solid fa-xmark text-xs leading-none"></i>
+            <span style="position: relative; top: 1px;" class="text-xs leading-none">Clear</span>
+        </a>
+    @endif
+</div>
                 </div>
             </form>
         </div>
@@ -132,10 +126,14 @@
                                         {{-- Action Button --}}
                                         <td class="py-4 px-6 text-center">
                                             <a href="{{ route('doctor.patients.show', $patient) }}"
-                                               class="inline-flex items-center gap-1.5 bg-white group-hover:bg-[#1F6F8B] text-[#003366] group-hover:text-white px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl border border-slate-200 group-hover:border-[#1F6F8B] transition-all duration-200 shadow-xs">
-                                                View Record
-                                                <i class="fa-solid fa-chevron-right text-[10px] transition-transform group-hover:translate-x-0.5"></i>
-                                            </a>
+   class="inline-flex items-center justify-center gap-1.5 bg-white group-hover:bg-[#1F6F8B] text-[#003366] group-hover:text-white px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl border border-slate-200 group-hover:border-[#1F6F8B] transition-all duration-200 shadow-xs">
+
+    <span style="position: relative; top: 2.5px;" class="text-xs leading-none">
+        View Record
+    </span>
+
+    <i class="fa-solid fa-chevron-right text-[10px] leading-none transition-transform group-hover:translate-x-0.5"></i>
+</a>
                                         </td>
                                     </tr>
                                 @endforeach

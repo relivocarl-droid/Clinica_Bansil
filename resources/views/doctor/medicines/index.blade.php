@@ -1,3 +1,4 @@
+
 @extends('layouts.doctor')
 
 @section('content')
@@ -108,8 +109,10 @@
                 <div class="flex justify-end pt-2">
                     <button type="submit"
                             class="bg-[#1F6F8B] hover:bg-[#165267] active:bg-[#113f50] text-white px-7 py-3 text-xs font-bold uppercase tracking-wider rounded-xl active:scale-95 transition-all shadow-xs flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-plus text-xs"></i>
-                        Add Medicine
+                        <i class="fa-solid fa-plus text-xs leading-none"></i>
+                        <span style="position: relative; top: -1px;" class="text-xs leading-none">
+                            Add Medicine
+                        </span>
                     </button>
                 </div>
 
@@ -121,15 +124,39 @@
     <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
 
         {{-- Table Header --}}
-        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-[#f4f7fc]">
+        <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-[#f4f7fc]">
             <h3 class="text-xs font-bold text-[#003366] uppercase tracking-wider flex items-center gap-2">
                 <i class="fa-solid fa-capsules text-[#1F6F8B] text-sm"></i>
                 Medicine List by Category
             </h3>
 
-            <span class="bg-[#1F6F8B]/10 text-[#1F6F8B] text-[10px] font-bold px-3 py-1 rounded-lg tracking-wider uppercase border border-[#1F6F8B]/20">
-                Total: {{ $medicines->count() }}
-            </span>
+            <div class="flex items-center gap-3">
+
+    {{-- Category Filter --}}
+    <select id="categoryFilter"
+            class="bg-white border border-slate-200 rounded-lg pl-3 pr-8 py-2 text-xs font-bold text-[#003366] focus:border-[#1F6F8B] focus:outline-none cursor-pointer">
+
+        <option value="all">All Categories</option>
+
+        @foreach($medicines->pluck('category')->filter()->unique()->sort() as $filterCategory)
+            <option value="{{ strtolower($filterCategory) }}">
+                {{ $filterCategory }}
+            </option>
+        @endforeach
+
+        @if($medicines->contains(fn($medicine) => empty($medicine->category)))
+            <option value="other">Other</option>
+        @endif
+
+    </select>
+
+    {{-- Total Count --}}
+    <span id="medicineTotal"
+          class="bg-[#1F6F8B]/10 text-[#1F6F8B] text-[10px] font-bold px-3 py-1 rounded-lg tracking-wider uppercase border border-[#1F6F8B]/20 whitespace-nowrap">
+        Total: {{ $medicines->count() }}
+    </span>
+
+</div>
         </div>
 
         {{-- Medicine Table --}}
@@ -149,7 +176,9 @@
                     @forelse($medicines->groupBy('category') as $category => $items)
 
                         {{-- Category Heading --}}
-                        <tr class="bg-[#f4f7fc]">
+                        <tr class="bg-[#f4f7fc] category-row"
+                            data-category="{{ strtolower($category ?: 'Other') }}">
+
                             <td colspan="3"
                                 class="px-6 md:px-8 py-3 text-xs font-bold uppercase tracking-wider text-[#1F6F8B]">
 
@@ -165,7 +194,8 @@
                         {{-- Medicines in This Category --}}
                         @foreach($items as $medicine)
 
-                            <tr class="hover:bg-slate-50/60 transition-colors group">
+                            <tr class="hover:bg-slate-50/60 transition-colors group medicine-row"
+                                data-category="{{ strtolower($category ?: 'Other') }}">
 
                                 {{-- Medicine Name --}}
                                 <td class="py-4 px-6 md:px-8 text-xs font-bold text-[#003366] group-hover:text-[#1F6F8B] transition-colors uppercase tracking-wider">
@@ -233,5 +263,55 @@
     </div>
 
 </div>
+
+{{-- Category Filter Script --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const categoryFilter = document.getElementById('categoryFilter');
+    const medicineRows = document.querySelectorAll('.medicine-row');
+    const categoryRows = document.querySelectorAll('.category-row');
+    const medicineTotal = document.getElementById('medicineTotal');
+
+    if (!categoryFilter) return;
+
+    categoryFilter.addEventListener('change', function () {
+
+        const selectedCategory = this.value;
+        let visibleCount = 0;
+
+        // Filter medicine rows
+        medicineRows.forEach(row => {
+
+            const medicineCategory = row.dataset.category;
+
+            const show = selectedCategory === 'all' ||
+                         medicineCategory === selectedCategory;
+
+            row.style.display = show ? '' : 'none';
+
+            if (show) {
+                visibleCount++;
+            }
+        });
+
+        // Filter category headings
+        categoryRows.forEach(row => {
+
+            const category = row.dataset.category;
+
+            const show = selectedCategory === 'all' ||
+                         category === selectedCategory;
+
+            row.style.display = show ? '' : 'none';
+        });
+
+        // Update total count
+        medicineTotal.textContent = 'Total: ' + visibleCount;
+
+    });
+
+});
+</script>
 
 @endsection

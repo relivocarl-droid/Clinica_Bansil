@@ -47,9 +47,9 @@
     <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
         <h3 class="font-bold text-[#003366] text-lg">Today's Patient Pipeline</h3>
         <!-- Active Appointments Tag -->
-        <span class="px-3 py-1 bg-blue-50 text-[#236ff2] border border-blue-200/60 text-xs font-semibold rounded-full">
-            Active Appointments
-        </span>
+        <span class="px-3 py-1 bg-blue-50 text-[#236ff2] border border-blue-200/60 text-xs font-semibold rounded-full flex items-center justify-center relative top-[2px]">
+    Active Appointments
+</span>
     </div>
 
     <div class="hidden overflow-x-auto md:block">
